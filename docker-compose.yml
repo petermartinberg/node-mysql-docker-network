@@ -1,0 +1,44 @@
+services: #Container
+
+  db:
+    image: mysql
+    container_name: mysql2
+    networks:
+      - beispiel-netzwerk
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE={MYSQL_DATABASE}
+      - EXPRESS_PORT={EXPRESS_PORT}
+
+
+    volumes:
+      - db_mysql_save:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./  
+    container_name: mein-backend
+    networks: 
+      - beispiel-netzwerk
+    ports:
+      - 4000:5012
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+    db_mysql_save:
+
+
+networks:
+    beispiel-netzwerk:
+
+
+
+
+
+
